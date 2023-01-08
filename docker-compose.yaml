@@ -1,0 +1,16 @@
+version: '3'
+services:
+  node:
+    build:
+      dockerfile: docker/node/Dockerfile
+      context: .
+      args:
+        - UID=${UID}
+    restart: unless-stopped
+    user: ${UID}:${UID}
+    ports:
+      - 3333:3333
+    entrypoint: npm
+    command: run dev
+    volumes:
+      - ./:/home/node/app
