@@ -55,7 +55,10 @@
   },
   "dependencies": {
     "@adonisjs/core": "^5.9.0",
+    "@adonisjs/lucid": "^18.3.0",
     "@adonisjs/repl": "^3.1.11",
+    "luxon": "^3.2.1",
+    "pg": "^8.8.0",
     "plaid": "^12.2.0",
     "proxy-addr": "^2.0.7",
     "reflect-metadata": "^0.1.13",
