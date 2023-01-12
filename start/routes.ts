@@ -18,7 +18,7 @@
 |
 */
 
-import Route from '@ioc:Adonis/Core/Route'
+import Route from '@ioc:Adonis/Core/Route';
 import {
   Configuration,
   PlaidApi,
@@ -27,7 +27,7 @@ import {
   CountryCode,
   LinkTokenCreateRequestUser,
   Products,
-} from 'plaid'
+} from 'plaid';
 
 const configuration = new Configuration({
   basePath: PlaidEnvironments.development,
@@ -37,13 +37,13 @@ const configuration = new Configuration({
       'PLAID-SECRET': process.env.PLAID_SECRET,
     },
   },
-})
+});
 
-const plaidClient = new PlaidApi(configuration)
+const plaidClient = new PlaidApi(configuration);
 
 Route.get('/', async () => {
-  return { hello: 'world' }
-})
+  return { hello: 'world' };
+});
 
 Route.get('/link/token', async () => {
   if (
@@ -53,7 +53,7 @@ Route.get('/link/token', async () => {
   ) {
     const user: LinkTokenCreateRequestUser = {
       client_user_id: '1',
-    }
+    };
 
     const linkTokenCreateRequest: LinkTokenCreateRequest = {
       client_id: process.env.PLAID_CLIENT_ID,
@@ -63,14 +63,14 @@ Route.get('/link/token', async () => {
       country_codes: [CountryCode.Us],
       user,
       products: [Products.Auth, Products.Transactions],
-    }
+    };
     try {
-      const response = await plaidClient.linkTokenCreate(linkTokenCreateRequest)
-      return response.data
+      const response = await plaidClient.linkTokenCreate(linkTokenCreateRequest);
+      return response.data;
     } catch (error) {
-      console.error(error)
-      return { error: error.message }
+      console.error(error);
+      return { error: error.message };
     }
   }
-  return { error: 'something happened' }
-})
+  return { error: 'something happened' };
+});
