@@ -45,6 +45,24 @@ Route.get('/', async () => {
   return { hello: 'world' };
 });
 
+Route.get('/oauth/state', async () => {
+  // TODO: create new table for oauth-login-requests
+  // TODO: whenever this endpoint is called (and it should be when someone clicks the sign-in with GitHub button, create a new UUID and store it in the table
+  // TODO: base64 the UUID that was generated and return that to the client: { state: 'asdfasdfasdf' })
+  return { hello: 'world' };
+});
+
+// TODO: create some sort of scheduled task that removes old oauth-login-requests
+// TODO: we should store a createdAt date in the table as well to figure out which ones are old
+
+Route.get('/oauth/github', async () => {
+  // TODO: decode the state parameter
+  // TODO: compare to see if it's in the database, if so remove it from the database and continue
+  // TODO: else 401
+  // TODO: POST to the https://github.com/login/oauth/access_token with the client with correct params https://github.com/login/oauth/access_token
+  return { hello: 'world' };
+});
+
 Route.get('/link/token', async () => {
   if (
     'PLAID_CLIENT_ID' in process.env &&
