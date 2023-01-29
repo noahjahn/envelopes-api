@@ -19,6 +19,16 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route';
+
+Route.get('/', async ({ response }) => {
+  response.redirect('health');
+});
+
+Route.group(() => {
+  Route.get('callback', 'OAuthController.index');
+  Route.get('redirect', 'OAuthController.redirect');
+}).prefix('oauth/:provider');
+
 import {
   Configuration,
   PlaidApi,
@@ -28,67 +38,45 @@ import {
   LinkTokenCreateRequestUser,
   Products,
 } from 'plaid';
-
-const configuration = new Configuration({
-  basePath: PlaidEnvironments.development,
-  baseOptions: {
-    headers: {
-      'PLAID-CLIENT-ID': process.env.PLAID_CLIENT_ID,
-      'PLAID-SECRET': process.env.PLAID_SECRET,
+Route.group(() => {
+  const configuration = new Configuration({
+    basePath: PlaidEnvironments.development,
+    baseOptions: {
+      headers: {
+        'PLAID-CLIENT-ID': process.env.PLAID_CLIENT_ID,
+        'PLAID-SECRET': process.env.PLAID_SECRET,
+      },
     },
-  },
-});
+  });
 
-const plaidClient = new PlaidApi(configuration);
+  const plaidClient = new PlaidApi(configuration);
+  Route.get('/link/token', async () => {
+    if (
+      'PLAID_CLIENT_ID' in process.env &&
+      process.env.PLAID_CLIENT_ID !== undefined &&
+      'PLAID_SECRET' in process.env
+    ) {
+      const user: LinkTokenCreateRequestUser = {
+        client_user_id: '1',
+      };
 
-Route.get('/', async () => {
-  return { hello: 'world' };
-});
-
-Route.get('/oauth/state', async () => {
-  // TODO: create new table for oauth-login-requests
-  // TODO: whenever this endpoint is called (and it should be when someone clicks the sign-in with GitHub button, create a new UUID and store it in the table
-  // TODO: base64 the UUID that was generated and return that to the client: { state: 'asdfasdfasdf' })
-  return { hello: 'world' };
-});
-
-// TODO: create some sort of scheduled task that removes old oauth-login-requests
-// TODO: we should store a createdAt date in the table as well to figure out which ones are old
-
-Route.get('/oauth/github', async () => {
-  // TODO: decode the state parameter
-  // TODO: compare to see if it's in the database, if so remove it from the database and continue
-  // TODO: else 401
-  // TODO: POST to the https://github.com/login/oauth/access_token with the client with correct params https://github.com/login/oauth/access_token
-  return { hello: 'world' };
-});
-
-Route.get('/link/token', async () => {
-  if (
-    'PLAID_CLIENT_ID' in process.env &&
-    process.env.PLAID_CLIENT_ID !== undefined &&
-    'PLAID_SECRET' in process.env
-  ) {
-    const user: LinkTokenCreateRequestUser = {
-      client_user_id: '1',
-    };
-
-    const linkTokenCreateRequest: LinkTokenCreateRequest = {
-      client_id: process.env.PLAID_CLIENT_ID,
-      secret: process.env.PLAID_SECRET,
-      client_name: 'envelopes',
-      language: 'en',
-      country_codes: [CountryCode.Us],
-      user,
-      products: [Products.Auth, Products.Transactions],
-    };
-    try {
-      const response = await plaidClient.linkTokenCreate(linkTokenCreateRequest);
-      return response.data;
-    } catch (error) {
-      console.error(error);
-      return { error: error.message };
+      const linkTokenCreateRequest: LinkTokenCreateRequest = {
+        client_id: process.env.PLAID_CLIENT_ID,
+        secret: process.env.PLAID_SECRET,
+        client_name: 'envelopes',
+        language: 'en',
+        country_codes: [CountryCode.Us],
+        user,
+        products: [Products.Auth, Products.Transactions],
+      };
+      try {
+        const response = await plaidClient.linkTokenCreate(linkTokenCreateRequest);
+        return response.data;
+      } catch (error) {
+        console.error(error);
+        return { error: error.message };
+      }
     }
-  }
-  return { error: 'something happened' };
-});
+    return { error: 'something happened' };
+  });
+}).middleware('auth');

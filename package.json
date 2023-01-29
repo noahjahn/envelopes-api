@@ -42,6 +42,7 @@
     "@japa/runner": "^2.2.2",
     "@types/proxy-addr": "^2.0.0",
     "@types/source-map-support": "^0.5.6",
+    "@types/uuid": "^9.0.0",
     "adonis-preset-ts": "^2.1.0",
     "eslint": "^8.31.0",
     "eslint-config-prettier": "^8.6.0",
@@ -54,14 +55,20 @@
     "youch-terminal": "^2.1.5"
   },
   "dependencies": {
+    "@adonisjs/ally": "^4.1.5",
+    "@adonisjs/auth": "^8.2.3",
     "@adonisjs/core": "^5.9.0",
     "@adonisjs/lucid": "^18.3.0",
     "@adonisjs/repl": "^3.1.11",
+    "@adonisjs/session": "^6.4.0",
+    "i": "^0.3.7",
     "luxon": "^3.2.1",
+    "npm": "^9.4.0",
     "pg": "^8.8.0",
     "plaid": "^12.2.0",
     "proxy-addr": "^2.0.7",
     "reflect-metadata": "^0.1.13",
-    "source-map-support": "^0.5.21"
+    "source-map-support": "^0.5.21",
+    "uuid": "^9.0.0"
   }
 }
