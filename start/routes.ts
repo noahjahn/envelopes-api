@@ -19,6 +19,7 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route';
+import HealthCheck from '@ioc:Adonis/Core/HealthCheck';
 
 Route.get('/', async ({ response }) => {
   response.redirect('health');
@@ -28,6 +29,12 @@ Route.group(() => {
   Route.get('callback', 'OAuthController.index');
   Route.get('redirect', 'OAuthController.redirect');
 }).prefix('oauth/:provider');
+
+Route.get('health', async ({ response }) => {
+  const report = await HealthCheck.getReport();
+
+  report.healthy ? response.ok(report) : response.badRequest(report);
+});
 
 import {
   Configuration,
