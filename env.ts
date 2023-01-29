@@ -26,6 +26,7 @@ export default Env.rules({
   PG_USER: Env.schema.string(),
   PG_PASSWORD: Env.schema.string.optional(),
   PG_DB_NAME: Env.schema.string(),
+  APP_URL: Env.schema.string(),
   FRONTEND_URL: Env.schema.string(),
   PLAID_CLIENT_ID: Env.schema.string(),
   PLAID_SECRET: Env.schema.string(),
