@@ -20,6 +20,7 @@
 
 import Route from '@ioc:Adonis/Core/Route';
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck';
+import Env from '@ioc:Adonis/Core/Env';
 
 Route.get('/', async ({ response }) => {
   response.redirect('health');
@@ -40,6 +41,12 @@ Route.group(() => {
   Route.get('logged-in', async ({ auth, response }) => {
     await auth.use('web').authenticate();
     response.send(auth.use('web').isLoggedIn);
+  });
+  Route.get('logout', async ({ auth, response }) => {
+    await auth.use('web').authenticate();
+    await auth.use('web').logout();
+
+    response.redirect(Env.get('FRONTEND_URL'));
   });
 }).prefix('user');
 
