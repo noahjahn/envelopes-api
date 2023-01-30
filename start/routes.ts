@@ -36,6 +36,13 @@ Route.get('health', async ({ response }) => {
   report.healthy ? response.ok(report) : response.badRequest(report);
 });
 
+Route.group(() => {
+  Route.get('logged-in', async ({ auth, response }) => {
+    await auth.use('web').authenticate();
+    response.send(auth.use('web').isLoggedIn);
+  });
+}).prefix('user');
+
 import {
   Configuration,
   PlaidApi,
