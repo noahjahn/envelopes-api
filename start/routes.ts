@@ -48,7 +48,7 @@ Route.group(() => {
 
     response.redirect(Env.get('FRONTEND_URL'));
   });
-}).prefix('user');
+}).prefix('auth');
 
 import {
   Configuration,
