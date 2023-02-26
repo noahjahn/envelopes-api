@@ -100,4 +100,6 @@ Route.group(() => {
     }
     return { error: 'something happened' };
   });
-}).middleware('auth');
+})
+  .prefix('plaid')
+  .middleware('auth');
