@@ -50,6 +50,12 @@ Route.group(() => {
   });
 }).prefix('auth');
 
+Route.group(() => {
+  Route.get('me', 'ProfilesController.me');
+})
+  .prefix('profile')
+  .middleware('auth');
+
 import {
   Configuration,
   PlaidApi,
