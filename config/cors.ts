@@ -6,6 +6,7 @@
  */
 
 import type { CorsConfig } from '@ioc:Adonis/Core/Cors';
+import Env from '@ioc:Adonis/Core/Env';
 
 const corsConfig: CorsConfig = {
   /*
@@ -44,7 +45,7 @@ const corsConfig: CorsConfig = {
   |                     one of the above values.
   |
   */
-  origin: true,
+  origin: Env.get('FRONTEND_URL'),
 
   /*
   |--------------------------------------------------------------------------
@@ -56,7 +57,7 @@ const corsConfig: CorsConfig = {
   |
   | Following is the list of default methods. Feel free to add more.
   */
-  methods: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'HEAD', 'POST', 'PATCH', 'PUT', 'DELETE'],
 
   /*
   |--------------------------------------------------------------------------
