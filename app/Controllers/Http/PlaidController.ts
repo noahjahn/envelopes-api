@@ -1,5 +1,7 @@
+import { RequestContract } from '@ioc:Adonis/Core/Request';
 import { ResponseContract } from '@ioc:Adonis/Core/Response';
 import { LoggerContract } from '@ioc:Adonis/Core/Logger';
+import { schema } from '@ioc:Adonis/Core/Validator';
 import { AuthContract } from '@ioc:Adonis/Addons/Auth';
 
 import { Configuration, PlaidApi, PlaidEnvironments, CountryCode, Products } from 'plaid';
@@ -57,6 +59,41 @@ export default class ProfilesController {
         products: [Products.Auth, Products.Transactions],
       });
       return response.ok(plaidLinkTokenResponse.data);
+    } catch (error) {
+      logger.error(error.toString());
+      logger.error(error.stack);
+      return response.serviceUnavailable({ error: error.message });
+    }
+  }
+
+  public async itemAccessToken({
+    auth,
+    logger,
+    response,
+    request,
+  }: {
+    auth: AuthContract;
+    logger: LoggerContract;
+    response: ResponseContract;
+    request: RequestContract;
+  }) {
+    const publicTokenSchema = schema.create({
+      publicToken: schema.string({ trim: true }),
+    });
+
+    const payload = await request.validate({ schema: publicTokenSchema });
+
+    try {
+      const itemPublicTokenExchangeResponse = await plaidClient.itemPublicTokenExchange({
+        public_token: payload.publicToken,
+      });
+
+      await auth.use('web').user?.related('plaidItems').create({
+        itemId: itemPublicTokenExchangeResponse.data.item_id,
+        accessToken: itemPublicTokenExchangeResponse.data.access_token,
+      });
+
+      return response.created();
     } catch (error) {
       logger.error(error.toString());
       logger.error(error.stack);
