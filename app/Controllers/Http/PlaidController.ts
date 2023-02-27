@@ -3,20 +3,8 @@ import { ResponseContract } from '@ioc:Adonis/Core/Response';
 import { LoggerContract } from '@ioc:Adonis/Core/Logger';
 import { schema } from '@ioc:Adonis/Core/Validator';
 import { AuthContract } from '@ioc:Adonis/Addons/Auth';
-
-import { Configuration, PlaidApi, PlaidEnvironments, CountryCode, Products } from 'plaid';
-
-const configuration = new Configuration({
-  basePath: PlaidEnvironments.development,
-  baseOptions: {
-    headers: {
-      'PLAID-CLIENT-ID': process.env.PLAID_CLIENT_ID,
-      'PLAID-SECRET': process.env.PLAID_SECRET,
-    },
-  },
-});
-
-const plaidClient = new PlaidApi(configuration);
+import { CountryCode, Products } from 'plaid';
+import plaidClient from 'App/Services/PlaidService';
 
 export default class ProfilesController {
   public async linkToken({
