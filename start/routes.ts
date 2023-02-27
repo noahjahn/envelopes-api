@@ -56,56 +56,8 @@ Route.group(() => {
   .prefix('profile')
   .middleware('auth');
 
-import {
-  Configuration,
-  PlaidApi,
-  PlaidEnvironments,
-  LinkTokenCreateRequest,
-  CountryCode,
-  LinkTokenCreateRequestUser,
-  Products,
-} from 'plaid';
 Route.group(() => {
-  const configuration = new Configuration({
-    basePath: PlaidEnvironments.development,
-    baseOptions: {
-      headers: {
-        'PLAID-CLIENT-ID': process.env.PLAID_CLIENT_ID,
-        'PLAID-SECRET': process.env.PLAID_SECRET,
-      },
-    },
-  });
-
-  const plaidClient = new PlaidApi(configuration);
-  Route.get('/link/token', async () => {
-    if (
-      'PLAID_CLIENT_ID' in process.env &&
-      process.env.PLAID_CLIENT_ID !== undefined &&
-      'PLAID_SECRET' in process.env
-    ) {
-      const user: LinkTokenCreateRequestUser = {
-        client_user_id: '1',
-      };
-
-      const linkTokenCreateRequest: LinkTokenCreateRequest = {
-        client_id: process.env.PLAID_CLIENT_ID,
-        secret: process.env.PLAID_SECRET,
-        client_name: 'envelopes',
-        language: 'en',
-        country_codes: [CountryCode.Us],
-        user,
-        products: [Products.Auth, Products.Transactions],
-      };
-      try {
-        const response = await plaidClient.linkTokenCreate(linkTokenCreateRequest);
-        return response.data;
-      } catch (error) {
-        console.error(error);
-        return { error: error.message };
-      }
-    }
-    return { error: 'something happened' };
-  });
+  Route.get('/link/token', 'PlaidController.linkToken');
 })
   .prefix('plaid')
   .middleware('auth');
