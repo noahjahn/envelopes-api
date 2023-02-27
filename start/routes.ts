@@ -62,3 +62,9 @@ Route.group(() => {
 })
   .prefix('plaid')
   .middleware('auth');
+
+Route.group(() => {
+  Route.get('', 'BanksController.index');
+})
+  .prefix('banks')
+  .middleware('auth');
