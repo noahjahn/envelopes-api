@@ -1,6 +1,7 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext';
 import PlaidItem from 'App/Models/PlaidItem';
 import { schema } from '@ioc:Adonis/Core/Validator';
+import plaidClient from 'App/Services/PlaidService';
 
 export default class BanksController {
   public async index({ auth, response }: HttpContextContract) {
@@ -49,5 +50,27 @@ export default class BanksController {
     );
   }
 
-  public async destroy({}: HttpContextContract) {}
+  public async destroy({ auth, params, response, logger }: HttpContextContract) {
+    await auth.use('web').user?.load('plaidItems', (plaidItemsQuery) => {
+      plaidItemsQuery.where('uuid', params.id);
+      plaidItemsQuery.limit(1);
+    });
+
+    if (auth.user?.plaidItems.length === 0) {
+      return response.notFound();
+    }
+
+    try {
+      await plaidClient.itemRemove({
+        access_token: auth.user!.plaidItems[0].accessToken,
+      });
+    } catch (error) {
+      logger.error(error);
+      return response.serviceUnavailable(error.message);
+    }
+
+    await auth.user!.plaidItems[0].delete();
+
+    return response.ok(null);
+  }
 }
