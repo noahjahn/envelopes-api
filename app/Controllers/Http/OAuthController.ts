@@ -1,22 +1,9 @@
-import { AllyContract } from '@ioc:Adonis/Addons/Ally';
-import { AuthContract } from '@ioc:Adonis/Addons/Auth';
-import { ResponseContract } from '@ioc:Adonis/Core/Response';
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext';
 import Env from '@ioc:Adonis/Core/Env';
 import User from 'App/Models/User';
 
 export default class OAuthController {
-  // INFO: This is an example of how to type declare desctructured parameters
-  public async index({
-    ally,
-    auth,
-    params,
-    response,
-  }: {
-    ally: AllyContract;
-    auth: AuthContract;
-    params: Record<string, any>;
-    response: ResponseContract;
-  }): Promise<void> {
+  public async index({ ally, auth, params, response }: HttpContextContract): Promise<void> {
     const oauthProvider = ally.use(params.provider);
 
     oauthProvider.loadState();
@@ -53,13 +40,7 @@ export default class OAuthController {
     response.redirect(Env.get('FRONTEND_URL'));
   }
 
-  public async redirect({
-    ally,
-    params,
-  }: {
-    ally: AllyContract;
-    params: Record<string, any>;
-  }): Promise<void> {
+  public async redirect({ ally, params }: HttpContextContract): Promise<void> {
     ally.use(params.provider).redirect();
   }
 }

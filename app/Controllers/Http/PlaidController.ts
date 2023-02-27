@@ -1,21 +1,10 @@
-import { RequestContract } from '@ioc:Adonis/Core/Request';
-import { ResponseContract } from '@ioc:Adonis/Core/Response';
-import { LoggerContract } from '@ioc:Adonis/Core/Logger';
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext';
 import { schema } from '@ioc:Adonis/Core/Validator';
-import { AuthContract } from '@ioc:Adonis/Addons/Auth';
 import { CountryCode, Products } from 'plaid';
 import plaidClient from 'App/Services/PlaidService';
 
 export default class ProfilesController {
-  public async linkToken({
-    auth,
-    logger,
-    response,
-  }: {
-    auth: AuthContract;
-    logger: LoggerContract;
-    response: ResponseContract;
-  }) {
+  public async linkToken({ auth, logger, response }: HttpContextContract) {
     if (
       !('PLAID_CLIENT_ID' in process.env) ||
       process.env.PLAID_CLIENT_ID === undefined ||
@@ -54,17 +43,7 @@ export default class ProfilesController {
     }
   }
 
-  public async itemAccessToken({
-    auth,
-    logger,
-    response,
-    request,
-  }: {
-    auth: AuthContract;
-    logger: LoggerContract;
-    response: ResponseContract;
-    request: RequestContract;
-  }) {
+  public async itemAccessToken({ auth, logger, response, request }: HttpContextContract) {
     const publicTokenSchema = schema.create({
       publicToken: schema.string({ trim: true }),
     });
