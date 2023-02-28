@@ -27,7 +27,7 @@ Route.get('/', async ({ response }) => {
 });
 
 Route.group(() => {
-  Route.get('callback', 'OAuthController.index');
+  Route.get('callback', 'OAuthController.callback');
   Route.get('redirect', 'OAuthController.redirect');
 }).prefix('oauth/:provider');
 

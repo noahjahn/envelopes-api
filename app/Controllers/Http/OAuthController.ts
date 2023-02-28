@@ -3,7 +3,7 @@ import Env from '@ioc:Adonis/Core/Env';
 import User from 'App/Models/User';
 
 export default class OAuthController {
-  public async index({ ally, auth, params, response }: HttpContextContract): Promise<void> {
+  public async callback({ ally, auth, params, response }: HttpContextContract): Promise<void> {
     const oauthProvider = ally.use(params.provider);
 
     oauthProvider.loadState();
