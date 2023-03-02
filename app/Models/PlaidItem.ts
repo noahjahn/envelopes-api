@@ -21,6 +21,12 @@ export default class PlaidItem extends BaseModel {
   @column()
   public name: string;
 
+  @column()
+  public updateRequired: boolean;
+
+  @column()
+  public updateRequiredReason: string;
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime;
 

@@ -12,6 +12,8 @@ export default class BanksController {
         return {
           uuid: plaidItem.uuid,
           name: plaidItem.name,
+          updateRequired: plaidItem.updateRequired,
+          updateRequiredReason: plaidItem.updateRequiredReason,
         };
       })
     );
@@ -65,7 +67,7 @@ export default class BanksController {
         access_token: auth.user!.plaidItems[0].accessToken,
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(error.message);
       return response.serviceUnavailable(error.message);
     }
 

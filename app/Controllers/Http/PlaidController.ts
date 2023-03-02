@@ -53,4 +53,24 @@ export default class ProfilesController {
       return response.serviceUnavailable({ error: error.message });
     }
   }
+
+  public async resolveItemAccessToken({ auth, response, params }: HttpContextContract) {
+    await auth.user!.load('plaidItems', (plaidItemsQuery) => {
+      plaidItemsQuery.where('uuid', params.id);
+      plaidItemsQuery.limit(1);
+    });
+
+    if (auth.user?.plaidItems.length === 0) {
+      return response.notFound();
+    }
+
+    // TODO: check updateRequiredReason and test before removing updateRequired status
+
+    await auth.user!.related('plaidItems').query().where('uuid', params.id).update({
+      updateRequired: false,
+      updateRequiredReason: null,
+    });
+
+    return response.ok(null);
+  }
 }

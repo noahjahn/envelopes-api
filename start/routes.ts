@@ -59,6 +59,7 @@ Route.group(() => {
 Route.group(() => {
   Route.get('/link/token', 'PlaidController.linkToken');
   Route.post('/item/access-token', 'PlaidController.itemAccessToken');
+  Route.get('/item/access-token/resolve/:id', 'PlaidController.resolveItemAccessToken');
 })
   .prefix('plaid')
   .middleware('auth');
