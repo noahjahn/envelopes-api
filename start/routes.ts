@@ -59,6 +59,8 @@ Route.group(() => {
 Route.group(() => {
   Route.get('/link/token', 'PlaidController.linkToken');
   Route.post('/item/access-token', 'PlaidController.itemAccessToken');
+  Route.patch('/item/access-token/:id', 'PlaidController.updateItemAccessToken');
+  Route.put('/item/access-token/:id', 'PlaidController.updateItemAccessToken');
   Route.get('/item/access-token/resolve/:id', 'PlaidController.resolveItemAccessToken');
 })
   .prefix('plaid')

@@ -54,6 +54,31 @@ export default class ProfilesController {
     }
   }
 
+  public async updateItemAccessToken({ auth, logger, response, params }: HttpContextContract) {
+    await auth.user!.load('plaidItems', (plaidItemsQuery) => {
+      plaidItemsQuery.where('uuid', params.id);
+      plaidItemsQuery.limit(1);
+    });
+
+    if (auth.user?.plaidItems.length === 0) {
+      return response.notFound();
+    }
+
+    try {
+      const plaidLinkTokenResponse = await plaidClient.linkTokenCreate({
+        ...linkTokenCreateRequestWithoutUserAndProducts,
+        user: {
+          client_user_id: auth.use('web').user!.uuid,
+        },
+        access_token: auth.user!.plaidItems[0].accessToken,
+      });
+      return response.ok(plaidLinkTokenResponse.data);
+    } catch (error) {
+      logger.error(error.message);
+      return response.serviceUnavailable({ error: error.message });
+    }
+  }
+
   public async resolveItemAccessToken({ auth, response, params }: HttpContextContract) {
     await auth.user!.load('plaidItems', (plaidItemsQuery) => {
       plaidItemsQuery.where('uuid', params.id);
