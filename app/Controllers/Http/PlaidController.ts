@@ -46,6 +46,7 @@ export default class ProfilesController {
   public async itemAccessToken({ auth, logger, response, request }: HttpContextContract) {
     const publicTokenSchema = schema.create({
       publicToken: schema.string({ trim: true }),
+      bankName: schema.string({ trim: true }),
     });
 
     const payload = await request.validate({ schema: publicTokenSchema });
@@ -58,6 +59,7 @@ export default class ProfilesController {
       await auth.use('web').user?.related('plaidItems').create({
         itemId: itemPublicTokenExchangeResponse.data.item_id,
         accessToken: itemPublicTokenExchangeResponse.data.access_token,
+        name: payload.bankName,
       });
 
       return response.created();
