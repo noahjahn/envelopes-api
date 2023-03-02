@@ -71,3 +71,9 @@ Route.resource('banks', 'BanksController')
   .middleware({
     '*': ['auth'],
   });
+
+Route.group(() => {
+  Route.get('', 'BalanceController.index');
+})
+  .prefix('balance')
+  .middleware('auth');
