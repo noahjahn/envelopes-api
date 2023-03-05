@@ -72,6 +72,12 @@ Route.resource('banks', 'BanksController')
     '*': ['auth'],
   });
 
+Route.resource('envelopes', 'EnvelopesController')
+  .apiOnly()
+  .middleware({
+    '*': ['auth'],
+  });
+
 Route.group(() => {
   Route.get('', 'BalanceController.index');
 })
