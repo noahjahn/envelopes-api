@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 import { column, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm';
 import BaseModel from './BaseModel';
-import PlaidItem from './PlaidItem';
+import Bank from './Bank';
 import Envelope from './Envelope';
 
 export default class User extends BaseModel {
@@ -16,8 +16,8 @@ export default class User extends BaseModel {
   @column()
   public accessToken: string;
 
-  @hasMany(() => PlaidItem)
-  public plaidItems: HasMany<typeof PlaidItem>;
+  @hasMany(() => Bank)
+  public banks: HasMany<typeof Bank>;
 
   @hasMany(() => Envelope)
   public envelopes: HasMany<typeof Envelope>;
