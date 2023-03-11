@@ -1,20 +1,32 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext';
-import { schema } from '@ioc:Adonis/Core/Validator';
+import { schema, rules, ParsedTypedSchema, TypedSchema } from '@ioc:Adonis/Core/Validator';
 
 export default class EnvelopesController {
+  private schema(user_uuid: string): ParsedTypedSchema<TypedSchema> {
+    return schema.create({
+      name: schema.string({ trim: true }, [
+        rules.unique({
+          table: 'envelopes',
+          column: 'name',
+          where: {
+            user_uuid,
+          },
+        }),
+      ]),
+      planned: schema.number(),
+    });
+  }
+
   public async index({ auth, response }: HttpContextContract) {
-    await auth.use('web').user?.load('envelopes');
-    response.ok(auth.user?.envelopes);
+    const user = auth.user!;
+    await user.load('envelopes');
+    response.ok(user.envelopes);
   }
 
   public async store({ auth, request, response }: HttpContextContract) {
-    const envelopeSchema = schema.create({
-      name: schema.string({ trim: true }),
-      planned: schema.number(),
-    });
-
-    const payload = await request.validate({ schema: envelopeSchema });
-    const envelope = await auth.use('web').user?.related('envelopes').create(payload);
+    const user = auth.user!;
+    const payload = await request.validate({ schema: this.schema(user.uuid) });
+    const envelope = await user.related('envelopes').create(payload);
 
     response.created(envelope);
   }
@@ -22,39 +34,33 @@ export default class EnvelopesController {
   public async show({}: HttpContextContract) {}
 
   public async update({ auth, request, response, params }: HttpContextContract) {
-    const envelopeSchema = schema.create({
-      name: schema.string({ trim: true }),
-      planned: schema.number(),
-    });
+    const user = auth.user!;
+    const payload = await request.validate({ schema: this.schema(user.uuid) });
 
-    const payload = await request.validate({ schema: envelopeSchema });
+    await user.load('envelopes', (query) => query.withScopes((scopes) => scopes.uuid(params.id)));
 
-    await auth.use('web').user?.load('envelopes', (envelopesQuery) => {
-      envelopesQuery.where('uuid', params.id);
-      envelopesQuery.limit(1);
-    });
-
-    if (auth.user!.envelopes.length === 0) {
+    if (user.envelopes.length === 0) {
       return response.notFound();
     }
 
-    auth.user!.envelopes[0].name = payload.name;
-    auth.user!.envelopes[0].planned = payload.planned;
-    await auth.user!.envelopes[0].save();
-    response.ok(auth.user!.envelopes[0]);
+    const envelope = user.envelopes[0];
+    envelope.name = payload.name;
+    envelope.planned = payload.planned;
+    await envelope.save();
+
+    response.ok(envelope);
   }
 
   public async destroy({ auth, response, params }: HttpContextContract) {
-    await auth.use('web').user?.load('envelopes', (envelopesQuery) => {
-      envelopesQuery.where('uuid', params.id);
-      envelopesQuery.limit(1);
-    });
+    const user = auth.user!;
 
-    if (auth.user?.envelopes.length === 0) {
+    await user.load('envelopes', (query) => query.withScopes((scopes) => scopes.uuid(params.id)));
+
+    if (user.envelopes.length === 0) {
       return response.notFound();
     }
 
-    await auth.user!.envelopes[0].delete();
+    await user.envelopes[0].delete();
 
     return response.ok(null);
   }

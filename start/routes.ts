@@ -58,10 +58,6 @@ Route.group(() => {
 
 Route.group(() => {
   Route.get('/link/token', 'PlaidController.linkToken');
-  Route.post('/item/access-token', 'PlaidController.itemAccessToken');
-  Route.patch('/item/access-token/:id', 'PlaidController.updateItemAccessToken');
-  Route.put('/item/access-token/:id', 'PlaidController.updateItemAccessToken');
-  Route.get('/item/access-token/resolve/:id', 'PlaidController.resolveItemAccessToken');
 })
   .prefix('plaid')
   .middleware('auth');
@@ -71,6 +67,12 @@ Route.resource('banks', 'BanksController')
   .middleware({
     '*': ['auth'],
   });
+
+Route.group(() => {
+  Route.get('/resolve/:id', 'BanksController.resolveItemAccessToken');
+})
+  .prefix('banks')
+  .middleware('auth');
 
 Route.resource('envelopes', 'EnvelopesController')
   .apiOnly()

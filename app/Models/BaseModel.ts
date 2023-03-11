@@ -1,5 +1,12 @@
-import { BaseModel as LucidBaseModel, column } from '@ioc:Adonis/Lucid/Orm';
+import {
+  BaseModel as LucidBaseModel,
+  column,
+  scope,
+  ModelQueryBuilderContract,
+} from '@ioc:Adonis/Lucid/Orm';
 import { v4 as uuidv4 } from 'uuid';
+
+type Builder = ModelQueryBuilderContract<typeof BaseModel>;
 
 export default class BaseModel extends LucidBaseModel {
   public static selfAssignPrimaryKey = true;
@@ -19,4 +26,13 @@ export default class BaseModel extends LucidBaseModel {
       baseModel.uuid = uuidv4();
     });
   }
+
+  public static oneWhere = scope((query, column: string, value: any) => {
+    query.where(column, value);
+    query.limit(1);
+  });
+
+  public static uuid = scope((query: Builder, uuid: string) => {
+    query.withScopes((scopes) => scopes.oneWhere('uuid', uuid));
+  });
 }

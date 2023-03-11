@@ -4,7 +4,7 @@ import BaseModel from './BaseModel';
 import User from './User';
 
 export default class PlaidItem extends BaseModel {
-  public static table = 'plaid_items';
+  public static table = 'banks';
 
   @column()
   public userUuid: string;
@@ -25,7 +25,7 @@ export default class PlaidItem extends BaseModel {
   public updateRequired: boolean;
 
   @column()
-  public updateRequiredReason: string;
+  public updateRequiredReason: string | null;
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime;
@@ -34,6 +34,6 @@ export default class PlaidItem extends BaseModel {
   public updatedAt: DateTime;
 
   public static clientSide = scope((query) => {
-    query.select('name');
+    query.select(['uuid', 'name', 'updateRequired', 'updateRequiredReason']);
   });
 }
